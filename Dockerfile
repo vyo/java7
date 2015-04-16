@@ -4,7 +4,11 @@ FROM alpine:3.1
 
 MAINTAINER Manuel Weidmann <weidmann.manuel@gmail.com>
 
-RUN apk add --update openjdk7 && rm -rf /var/cache/apk/*
+RUN apk add --update openjdk7 ca-certificates && rm -rf /var/cache/apk/*\
+  find /usr/share/ca-certificates/mozilla/ -name "*.crt" -exec keytool -import -trustcacerts \
+  -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
+  -file {} -alias {} \; && \
+  keytool -list -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts --storepass changeit
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
 ENV JAVA=$JAVA_HOME/bin
